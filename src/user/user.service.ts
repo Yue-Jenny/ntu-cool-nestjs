@@ -1,0 +1,81 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UserEntity } from '../entity/user/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+
+@Injectable()
+export class UserService {
+  private users: UserEntity[] = [];
+  private currentId = 1;
+
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const newUser = new UserEntity({
+      id: this.currentId,
+      name: createUserDto.name,
+      email: createUserDto.email,
+    });
+
+    this.users.push(newUser);
+    this.currentId++;
+    return newUser;
+  }
+
+  getUserById(id: number): UserEntity {
+    const user = this.users.find((user) => user.id === id);
+    if (user) {
+      return user;
+    } else {
+      throw new BadRequestException('User not found');
+    }
+  }
+
+  async findUserByNameAndEmail(
+    email: string,
+    name: string,
+  ): Promise<UserEntity[]> {
+    let filteredUsers = this.users;
+
+    if (email) {
+      filteredUsers = filteredUsers.filter((user) => user.email === email);
+    }
+
+    if (name) {
+      filteredUsers = filteredUsers.filter((user) => user.name === name);
+    }
+
+    if (filteredUsers) {
+      return filteredUsers;
+    } else {
+      throw new BadRequestException('User not found');
+    }
+  }
+
+  async editUser(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    const userIndex = this.users.findIndex((user) => user.id === id);
+
+    if (userIndex === -1) {
+      throw new BadRequestException('User not found');
+    }
+
+    this.users[userIndex].name =
+      updateUserDto.name || this.users[userIndex].name;
+    this.users[userIndex].email =
+      updateUserDto.email || this.users[userIndex].email;
+
+    return this.users[userIndex];
+  }
+
+  async deleteUser(id: number): Promise<UserEntity> {
+    const index = this.users.findIndex((user) => user.id === id);
+
+    if (index !== -1) {
+      const deletedUser = this.users.splice(index, 1)[0];
+      return deletedUser;
+    } else {
+      throw new BadRequestException('User not found');
+    }
+  }
+}
