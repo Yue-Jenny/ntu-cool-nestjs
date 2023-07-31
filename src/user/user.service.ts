@@ -8,7 +8,7 @@ export class UserService {
   private users: UserEntity[] = [];
   private currentId = 1;
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+  createUser(createUserDto: CreateUserDto): UserEntity {
     const newUser = new UserEntity({
       id: this.currentId,
       name: createUserDto.name,
@@ -29,10 +29,7 @@ export class UserService {
     }
   }
 
-  async findUserByNameAndEmail(
-    email: string,
-    name: string,
-  ): Promise<UserEntity[]> {
+  findUserByNameAndEmail(email: string, name: string): UserEntity[] {
     let filteredUsers = this.users;
 
     if (email) {
@@ -50,10 +47,7 @@ export class UserService {
     }
   }
 
-  async editUser(
-    id: number,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserEntity> {
+  editUser(id: number, updateUserDto: UpdateUserDto): UserEntity {
     const userIndex = this.users.findIndex((user) => user.id === id);
 
     if (userIndex === -1) {
@@ -68,7 +62,7 @@ export class UserService {
     return this.users[userIndex];
   }
 
-  async deleteUser(id: number): Promise<UserEntity> {
+  deleteUser(id: number): UserEntity {
     const index = this.users.findIndex((user) => user.id === id);
 
     if (index !== -1) {
