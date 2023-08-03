@@ -12,6 +12,13 @@ export class UserService {
     private enrollmentRepository: EnrollmentsRepository,
   ) {}
 
+  /**
+   * 1. everyone can create a user by name and email;
+   *  a. if email format does not match `/^\S@\S$/`, return Bad Request
+   * @param name
+   * @param email
+   * @returns UserEntity
+   */
   createUser(name: string, email: string): UserEntity {
     const newUser = new UserEntity({
       id: null,
@@ -23,6 +30,12 @@ export class UserService {
     return newUser;
   }
 
+  /**
+   * 2. everyone can get a user by user id;
+   *  a. if the user doesn't exist, return Bad Request
+   * @param id
+   * @returns UserEntity
+   */
   getUserById(id: number): UserEntity {
     const user = this.userRepository.getUserById(id);
     if (user) {
@@ -32,6 +45,14 @@ export class UserService {
     }
   }
 
+  /**
+   * 3. everyone can query a user by email or name;
+   *  a. use query string to specify email or name
+   *  b. if email format does not match ``/^\S@\S$/``, return Bad Request
+   * @param email
+   * @param name
+   * @returns UserEntity[]
+   */
   findUserByNameAndEmail(email: string, name: string): UserEntity[] {
     // query string to specify name
     if (name && !email) {
@@ -65,6 +86,16 @@ export class UserService {
 
     throw new BadRequestException('User not found.');
   }
+
+  /**
+   * 4. everyone can edit user's name and user's email by user id;
+   *  a. if the user doesn't exist, return Bad Request
+   *  b. if email format does not match ``/^\S@\S$/``, return Bad Request
+   * @param id
+   * @param name
+   * @param email
+   * @returns UserEntity
+   */
   editUser(id: number, name: string, email: string): UserEntity {
     const updatedUser = this.userRepository.updateUser(id, name, email);
     if (!updatedUser) {
@@ -73,6 +104,12 @@ export class UserService {
     return updatedUser;
   }
 
+  /**
+   * 5. everyone can delete a user by user id;
+   *  a. if the user doesn't exist, return Bad Request
+   * @param id
+   * @returns UserEntity
+   */
   deleteUserById(id: number): UserEntity {
     const deletedUser = this.userRepository.deleteUserById(id);
     if (!deletedUser) {
@@ -81,6 +118,12 @@ export class UserService {
     return deletedUser;
   }
 
+  /**
+   * 1. everyone can query users in the course by course id;
+   *  a. if the course doesn't exist, return Bad Request
+   * @param courseId
+   * @returns UserEntity[]
+   */
   getUsersByCourseId(courseId: number): UserEntity[] {
     const course = this.courseRepository.getCourseById(courseId);
     if (!course) {
