@@ -7,6 +7,7 @@ export class UpdateUserDto {
   name: string;
 
   @IsNotEmpty()
+  @IsString()
   @Matches(/^\S@\S$/)
   email: string;
 }

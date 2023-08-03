@@ -7,6 +7,7 @@ export class CreateUserDto {
   name: string;
 
   @IsNotEmpty()
+  @IsString()
   @Matches(/^\S@\S$/)
   email: string;
 }

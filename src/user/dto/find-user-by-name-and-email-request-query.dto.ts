@@ -7,6 +7,7 @@ export class findUserByNameAndEmailRequestQueryDto {
   name: string;
 
   @IsNotEmpty()
+  @IsString()
   @Matches(/^\S@\S$/)
   email: string;
 }
