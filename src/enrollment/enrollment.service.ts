@@ -105,9 +105,11 @@ export class EnrollmentService {
     // 添加 key-value 資訊
     if (courseId) {
       filters['courseId'] = courseId;
-    } else if (userId) {
+    }
+    if (userId) {
       filters['userId'] = userId;
-    } else if (role) {
+    }
+    if (role) {
       filters['role'] = role;
     }
     const foundEnrollmentEntities =
