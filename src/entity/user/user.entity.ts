@@ -1,8 +1,8 @@
-import { IsString, IsNotEmpty, IsNumber, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, Matches, IsInt } from 'class-validator';
 
 // 封裝 response 的物件資訊
 export class UserEntity {
-  @IsNumber()
+  @IsInt()
   id: number;
 
   @IsNotEmpty()
@@ -10,6 +10,7 @@ export class UserEntity {
   name: string;
 
   @IsNotEmpty()
+  @IsString()
   @Matches(/^\S@\S$/)
   email: string;
 
