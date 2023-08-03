@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { GetEnrollmentsByUserParamDto } from './dto/get-enrollment-by-user-param
 import { GetEnrollmentsByUserQueryDto } from './dto/get-enrollment-by-user-query.dto';
 import { instanceToPlain } from 'class-transformer';
 import { EnrollmentEntity } from '../entity/enrollment/enrollment.entity';
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @Controller('/api')
 export class EnrollmentController {
@@ -29,12 +31,15 @@ export class EnrollmentController {
   constructor(private enrollmentService: EnrollmentService) {}
 
   /**
-   *  2. everyone can enroll a user to a course by user id, course id and role;
+   * 7. everyone can enroll a user to a course by user id, course id and role;
    *   a. if the user, the course or the role doesn't exist, return Bad Request
+   *
+   * Advanced requirement: only admin `cool` can create, edit, delete a user;
    * @param enrollmentDto
    * @returns
    */
   @Post('/v1/enrollment')
+  @UseGuards(AuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -67,13 +72,15 @@ export class EnrollmentController {
   }
 
   /**
-   *  3. everyone can withdraw a user by enrollment id;
+   *  8. everyone can withdraw a user by enrollment id;
    *    a. if the enrollment doesn't exist, return Bad Request
-   *    b. 如同項目 2 , 若 user 不存在回傳 Bad Request
+   *
+   * Advanced requirement: only admin `cool` can create, edit, delete a user;
    * @param enrollmentId
    * @returns
    */
   @Delete('/v1/enrollment/:enrollmentId')
+  @UseGuards(AuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -102,7 +109,7 @@ export class EnrollmentController {
     }
   }
   /**
-   * 4. everyone can get an enrollment by enrollment id;
+   * 9. everyone can get an enrollment by enrollment id;
    * @param enrollmentId
    * @returns
    */
@@ -139,7 +146,7 @@ export class EnrollmentController {
     }
   }
   /**
-   * 5. everyone can query enrollments in the course by course id, and filter by role or user id;
+   * 10. everyone can query enrollments in the course by course id, and filter by role or user id;
    *  a. use a query string to specify a role or user id. like: ``/?userId=1&role=student``
    *  b. if the course doesn't exist, return Bad Request
    * @param courseId
@@ -189,7 +196,7 @@ export class EnrollmentController {
     }
   }
   /**
-   * 6. everyone can query enrollments by user id, and filter by role or course id;
+   * 11. everyone can query enrollments by user id, and filter by role or course id;
    *  a. use a query string to specify a role or course id. like: ``/?role=student``
    *  b. if the user doesn't exist, return Bad Request
    * @param userId

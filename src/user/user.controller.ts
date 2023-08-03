@@ -12,6 +12,7 @@ import {
   HttpException,
   InternalServerErrorException,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,6 +24,7 @@ import { GetUserByIdRequestParamDto } from './dto/get-user-by-id-request-param.d
 import { instanceToPlain } from 'class-transformer';
 import { GetUserByCourseIdRequestParamDto } from './dto/get-user-by-course-reques-param.dto';
 import { UserEntity } from '../entity/user/user.entity';
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @Controller('/api')
 export class UserController {
@@ -32,10 +34,13 @@ export class UserController {
   /**
    * 1. everyone can create a user by name and email;
    *  a. if email format does not match `/^\S@\S$/`, return Bad Request
+   *
+   * Advanced requirement: only admin `cool` can create, edit, delete a user;
    * @param createUserDto
    * @returns User
    */
   @Post('/v1/user')
+  @UseGuards(AuthGuard)
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUserDto: CreateUserDto) {
     let userEntity: UserEntity = null;
@@ -120,11 +125,14 @@ export class UserController {
    * 4. everyone can edit user's name and user's email by user id;
    *  a. if the user doesn't exist, return Bad Request
    *  b. if email format does not match ``/^\S@\S$/``, return Bad Request
+   *
+   * Advanced requirement: only admin `cool` can create, edit, delete a user;
    * @param id
    * @param updateUserDto
    * @returns
    */
   @Put('/v1/user/:id')
+  @UseGuards(AuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -155,10 +163,13 @@ export class UserController {
   /**
    * 5. everyone can delete a user by user id;
    *  a. if the user doesn't exist, return Bad Request
+   *
+   * Advanced requirement: only admin `cool` can create, edit, delete a user;
    * @param id
    * @returns
    */
   @Delete('/v1/user/:id')
+  @UseGuards(AuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -183,7 +194,7 @@ export class UserController {
   }
 
   /**
-   * 1. everyone can query users in the course by course id;
+   * 6. everyone can query users in the course by course id;
    *  a. if the course doesn't exist, return Bad Request
    * @param courseId
    * @returns UserEntity[]
