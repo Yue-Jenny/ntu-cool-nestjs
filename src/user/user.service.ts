@@ -1,27 +1,30 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserEntity } from '../entity/user/user.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UsersRepository } from './users.repository';
+import { EnrollmentsRepository } from '../enrollment/enrollment.repository';
+import { CoursesRepository } from '../course/courses.repository';
 
 @Injectable()
 export class UserService {
-  private users: UserEntity[] = [];
-  private currentId = 1;
+  constructor(
+    private userRepository: UsersRepository,
+    private courseRepository: CoursesRepository,
+    private enrollmentRepository: EnrollmentsRepository,
+  ) {}
 
-  createUser(createUserDto: CreateUserDto): UserEntity {
+  createUser(name: string, email: string): UserEntity {
     const newUser = new UserEntity({
-      id: this.currentId,
-      name: createUserDto.name,
-      email: createUserDto.email,
+      id: null,
+      name: name,
+      email: email,
     });
 
-    this.users.push(newUser);
-    this.currentId++;
+    this.userRepository.save(newUser);
     return newUser;
   }
 
   getUserById(id: number): UserEntity {
-    const user = this.users.find((user) => user.id === id);
+    const user = this.userRepository.getUserById(id);
     if (user) {
       return user;
     } else {
@@ -30,46 +33,76 @@ export class UserService {
   }
 
   findUserByNameAndEmail(email: string, name: string): UserEntity[] {
-    let filteredUsers = this.users;
-
-    if (email) {
-      filteredUsers = filteredUsers.filter((user) => user.email === email);
+    // query string to specify name
+    if (name && !email) {
+      const userByName = this.userRepository.getUserByName(name);
+      if (userByName.length === 0) {
+        throw new BadRequestException('User not found.');
+      }
+      return userByName;
     }
 
-    if (name) {
-      filteredUsers = filteredUsers.filter((user) => user.name === name);
+    // query string to specify email
+    if (email && !name) {
+      const userByEmail = this.userRepository.getUserByEmail(email);
+      if (userByEmail.length === 0) {
+        throw new BadRequestException('User not found.');
+      }
+      return userByEmail;
     }
 
-    if (filteredUsers) {
-      return filteredUsers;
-    } else {
-      throw new BadRequestException('User not found');
+    // query string to specify name and email
+    if (email && name) {
+      const userByEmailAndName = this.userRepository.getUserByEmailAndName(
+        email,
+        name,
+      );
+      if (userByEmailAndName.length === 0) {
+        throw new BadRequestException('User not found.');
+      }
+      return userByEmailAndName;
     }
+
+    throw new BadRequestException('User not found.');
+  }
+  editUser(id: number, name: string, email: string): UserEntity {
+    const updatedUser = this.userRepository.updateUser(id, name, email);
+    if (!updatedUser) {
+      throw new BadRequestException('User not found.');
+    }
+    return updatedUser;
   }
 
-  editUser(id: number, updateUserDto: UpdateUserDto): UserEntity {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-
-    if (userIndex === -1) {
+  deleteUserById(id: number): UserEntity {
+    const deletedUser = this.userRepository.deleteUserById(id);
+    if (!deletedUser) {
       throw new BadRequestException('User not found');
     }
-
-    this.users[userIndex].name =
-      updateUserDto.name || this.users[userIndex].name;
-    this.users[userIndex].email =
-      updateUserDto.email || this.users[userIndex].email;
-
-    return this.users[userIndex];
+    return deletedUser;
   }
 
-  deleteUser(id: number): UserEntity {
-    const index = this.users.findIndex((user) => user.id === id);
-
-    if (index !== -1) {
-      const deletedUser = this.users.splice(index, 1)[0];
-      return deletedUser;
-    } else {
-      throw new BadRequestException('User not found');
+  getUsersByCourseId(courseId: number): UserEntity[] {
+    const course = this.courseRepository.getCourseById(courseId);
+    if (!course) {
+      throw new BadRequestException();
     }
+
+    const enrollments =
+      this.enrollmentRepository.getEnrollmentsByCourseId(courseId);
+
+    // 從 enrollements 結果中取得所有 userIds
+    // 利用 userIds 取得相對應的 users, 並包裝為 UserEntity 物件回傳。
+    const userEntities = [];
+    enrollments.forEach((item) => {
+      const matchedUser = this.userRepository.getUserById(item.userId);
+      const userEntity = new UserEntity({
+        id: matchedUser.id,
+        name: matchedUser.name,
+        email: matchedUser.email,
+      });
+      userEntities.push(userEntity);
+    });
+
+    return userEntities;
   }
 }
