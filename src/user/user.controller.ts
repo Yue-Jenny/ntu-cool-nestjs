@@ -11,6 +11,7 @@ import {
   UsePipes,
   HttpException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,9 +21,12 @@ import { DeleteUserRequestParamDto } from './dto/delete-user-request-param.dto';
 import { EditUserRequestParamDto } from './dto/edit-user-request-param.dto';
 import { GetUserByIdRequestParamDto } from './dto/get-user-by-id-request-param.dto';
 import { instanceToPlain } from 'class-transformer';
+import { GetUserByCourseIdRequestParamDto } from './dto/get-user-by-course-reques-param.dto';
+import { UserEntity } from '../entity/user/user.entity';
 
 @Controller('/api')
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
   constructor(private userService: UserService) {}
 
   /**
@@ -34,12 +38,19 @@ export class UserController {
   @Post('/v1/user')
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUserDto: CreateUserDto) {
+    let userEntity: UserEntity = null;
     try {
-      return instanceToPlain(this.userService.createUser(createUserDto));
+      const { name, email } = createUserDto;
+      userEntity = this.userService.createUser(name, email);
+      const userEntityJSON = instanceToPlain(userEntity);
+      return userEntityJSON;
     } catch (error) {
       if (error instanceof HttpException) {
+        // TODO: 若有機敏資訊，可用 object.delete 刪除該 key
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw error;
       } else {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw new InternalServerErrorException();
       }
     }
@@ -58,13 +69,18 @@ export class UserController {
     }),
   )
   getUserById(@Param() getUserByIdDTO: GetUserByIdRequestParamDto) {
+    let userEntity: UserEntity = null;
     try {
       const { id } = getUserByIdDTO;
-      return instanceToPlain(this.userService.getUserById(id));
+      userEntity = this.userService.getUserById(id);
+      const userEntityJSON = instanceToPlain(userEntity);
+      return userEntityJSON;
     } catch (error) {
       if (error instanceof HttpException) {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw error;
       } else {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw new InternalServerErrorException();
       }
     }
@@ -83,15 +99,18 @@ export class UserController {
   findUserByNameAndEmail(
     @Query() queryDTO: findUserByNameAndEmailRequestQueryDto,
   ) {
+    let userEntities: UserEntity[] = [];
     try {
       const { email, name } = queryDTO;
-      return instanceToPlain(
-        this.userService.findUserByNameAndEmail(email, name),
-      );
+      userEntities = this.userService.findUserByNameAndEmail(email, name);
+      const userEntityJSON = instanceToPlain(userEntities);
+      return userEntityJSON;
     } catch (error) {
       if (error instanceof HttpException) {
+        this.logger.error(`userEntities: ${JSON.stringify(userEntities)}`);
         throw error;
       } else {
+        this.logger.error(`userEntities: ${JSON.stringify(userEntities)}`);
         throw new InternalServerErrorException();
       }
     }
@@ -115,13 +134,19 @@ export class UserController {
     @Param() editDto: EditUserRequestParamDto,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    let userEntity: UserEntity = null;
     try {
       const { id } = editDto;
-      return instanceToPlain(this.userService.editUser(id, updateUserDto));
+      const { name, email } = updateUserDto;
+      userEntity = this.userService.editUser(id, name, email);
+      const userEntityJSON = instanceToPlain(userEntity);
+      return userEntityJSON;
     } catch (error) {
       if (error instanceof HttpException) {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw error;
       } else {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw new InternalServerErrorException();
       }
     }
@@ -140,13 +165,48 @@ export class UserController {
     }),
   )
   deleteUser(@Param() deleteDto: DeleteUserRequestParamDto) {
+    let userEntity: UserEntity = null;
     try {
       const { id } = deleteDto;
-      return instanceToPlain(this.userService.deleteUser(id));
+      userEntity = this.userService.deleteUserById(id);
+      const userEntityJSON = instanceToPlain(userEntity);
+      return userEntityJSON;
     } catch (error) {
       if (error instanceof HttpException) {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
         throw error;
       } else {
+        this.logger.error(`userEntity: ${JSON.stringify(userEntity)}`);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
+  /**
+   * 1. everyone can query users in the course by course id;
+   *  a. if the course doesn't exist, return Bad Request
+   * @param courseId
+   * @returns UserEntity[]
+   */
+  @Get('/v1/user/:courseId/users')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
+  getUsersByCourseId(@Param() paramDto: GetUserByCourseIdRequestParamDto) {
+    let userEntities: UserEntity[] = [];
+    try {
+      const { courseId } = paramDto;
+      userEntities = this.userService.getUsersByCourseId(courseId);
+      const userEntitiesJSON = instanceToPlain(userEntities);
+      return userEntitiesJSON;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        this.logger.error(`userEntities: ${JSON.stringify(userEntities)}`);
+        throw error;
+      } else {
+        this.logger.error(`userEntities: ${JSON.stringify(userEntities)}`);
         throw new InternalServerErrorException();
       }
     }
