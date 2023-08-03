@@ -1,14 +1,81 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  InternalServerErrorException,
+  Logger,
+  Param,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CourseService } from './course.service';
+import { instanceToPlain } from 'class-transformer';
+import { GetCourseByIdRequestParamDto } from './dto/get-course-by-id-request-param.dto';
+import { GetCourseByUserIdRequestParamDto } from './dto/get-course-by-userId-request-param.dto';
+import { CourseEntity } from '../entity/course/course.entity';
 
-@Controller('/api/v1/course')
+@Controller('/api')
 export class CourseController {
+  private readonly logger = new Logger(CourseController.name);
   constructor(private courseService: CourseService) {}
 
-  // 1. everyone can query users in the course by course id;
-  //  a. if the course doesn't exist, return Bad Request
-  // 7. everyone can get a course by course id;
-  //  a. if the course doesn't exist, return Bad Request
-  // 8. everyone can query courses by user id ;
-  //  a. if the user doesn't exist, return Bad Request
+  /**
+   * 7. everyone can get a course by course id;
+   *  a. if the course doesn't exist, return Bad Request
+   * @param courseId
+   * @returns CourseEntity
+   */
+  @Get('/v1/course/:courseId')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
+  getCourseById(@Param() paramDto: GetCourseByIdRequestParamDto) {
+    let courseEntity: CourseEntity = null;
+    try {
+      const { courseId } = paramDto;
+      courseEntity = this.courseService.getCourseById(courseId);
+      const courseEntityJSON = instanceToPlain(courseEntity);
+      return courseEntityJSON;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        this.logger.error(`courseEntity: ${JSON.stringify(courseEntity)}`);
+        throw error;
+      } else {
+        this.logger.error(`courseEntity: ${JSON.stringify(courseEntity)}`);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
+  /**
+   * 8. everyone can query courses by user id ;
+   *  a. if the user doesn't exist, return Bad Request
+   * @param userId
+   * @returns CourseEntity[]
+   */
+  @Get('/v1/course/users/:userId')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
+  getCoursesByUserId(@Param() paramDto: GetCourseByUserIdRequestParamDto) {
+    let courseEntities: CourseEntity[] = null;
+    try {
+      const { userId } = paramDto;
+      courseEntities = this.courseService.getCoursesByUserId(userId);
+      const courseEntitiesJSON = instanceToPlain(courseEntities);
+      return courseEntitiesJSON;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        this.logger.error(`courseEntities: ${JSON.stringify(courseEntities)}`);
+        throw error;
+      } else {
+        this.logger.error(`courseEntities: ${JSON.stringify(courseEntities)}`);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
 }
