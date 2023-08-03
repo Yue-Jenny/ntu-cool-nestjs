@@ -62,10 +62,10 @@ export class EnrollmentService {
    * @returns EnrollmentEntity
    */
   getEnrollmentByEnrollmentId(enrollmentId: number): EnrollmentEntity {
-    const found =
+    const foundEnrollmentByEnrollmentId =
       this.enrollmentRepository.getEnrollmentByEnrollmentId(enrollmentId);
 
-    return found;
+    return foundEnrollmentByEnrollmentId;
   }
 
   getCourseById(courseId: number): CourseEntity {
