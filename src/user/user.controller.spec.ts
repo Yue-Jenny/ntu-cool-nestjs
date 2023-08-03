@@ -8,19 +8,34 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteUserRequestParamDto } from './dto/delete-user-request-param.dto';
 import { BadRequestException } from '@nestjs/common';
 import { UserEntity } from '../entity/user/user.entity';
+import { UsersRepository } from './users.repository';
+import { CoursesRepository } from '../course/courses.repository';
+import { EnrollmentsRepository } from '../enrollment/enrollment.repository';
 
 describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
-
+  let userRepository: UsersRepository;
+  let courseRepository: CoursesRepository;
+  let enrollmentRepository: EnrollmentsRepository;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [UserService],
+      providers: [
+        UserService,
+        UsersRepository,
+        CoursesRepository,
+        EnrollmentsRepository,
+      ],
     }).compile();
 
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
+    userRepository = module.get<UsersRepository>(UsersRepository);
+    courseRepository = module.get<CoursesRepository>(CoursesRepository);
+    enrollmentRepository = module.get<EnrollmentsRepository>(
+      EnrollmentsRepository,
+    );
   });
 
   describe('createUser', () => {
@@ -165,7 +180,7 @@ describe('UserController', () => {
         email: 'j@e',
       });
 
-      jest.spyOn(userService, 'deleteUser').mockReturnValue(user);
+      jest.spyOn(userService, 'deleteUserById').mockReturnValue(user);
       const deleteDto: DeleteUserRequestParamDto = { id: userId };
       expect(userController.deleteUser(deleteDto)).toEqual(user);
     });
@@ -174,7 +189,7 @@ describe('UserController', () => {
       // Assuming user with id 999 does not exist
       const userId = 999;
 
-      jest.spyOn(userService, 'deleteUser').mockImplementation(() => {
+      jest.spyOn(userService, 'deleteUserById').mockImplementation(() => {
         throw new BadRequestException('User not found');
       });
 
