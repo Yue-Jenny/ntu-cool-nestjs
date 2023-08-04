@@ -59,7 +59,7 @@ describe('EnrollmentController', () => {
       expect(enrollmentService.enrollUser).toHaveBeenCalledWith(
         1,
         2,
-        'student',
+        Roles.Student,
       );
       expect(result).toStrictEqual(instanceToPlain(expectedResult));
     });
@@ -114,8 +114,12 @@ describe('EnrollmentController', () => {
           throw new BadRequestException('Enrollment not found.');
         });
 
+      const withDrawUserDto: WithDrawUserDto = {
+        enrollmentId,
+      };
+
       expect(() =>
-        enrollmentController.withdrawUserByEnrollmentId({ enrollmentId }),
+        enrollmentController.withdrawUserByEnrollmentId(withDrawUserDto),
       ).toThrow(BadRequestException);
     });
   });
