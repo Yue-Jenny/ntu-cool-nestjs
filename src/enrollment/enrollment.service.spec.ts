@@ -11,7 +11,7 @@ import { EnrollmentEntity } from '../entity/enrollment/enrollment.entity';
 describe('EnrollmentService', () => {
   let enrollmentService: EnrollmentService;
   let userRepository: UsersRepository;
-  let courseRepository: CoursesRepository;
+  // let courseRepository: CoursesRepository;
   let enrollmentRepository: EnrollmentsRepository;
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('EnrollmentService', () => {
 
     enrollmentService = module.get<EnrollmentService>(EnrollmentService);
     userRepository = module.get<UsersRepository>(UsersRepository);
-    courseRepository = module.get<CoursesRepository>(CoursesRepository);
+    // courseRepository = module.get<CoursesRepository>(CoursesRepository);
     enrollmentRepository = module.get<EnrollmentsRepository>(
       EnrollmentsRepository,
     );

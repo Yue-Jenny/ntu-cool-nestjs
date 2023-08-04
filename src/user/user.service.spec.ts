@@ -9,9 +9,6 @@ import { EnrollmentsRepository } from '../enrollment/enrollment.repository';
 
 describe('UserService', () => {
   let userService: UserService;
-  let userRepository: UsersRepository;
-  let courseRepository: CoursesRepository;
-  let enrollmentRepository: EnrollmentsRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,11 +21,6 @@ describe('UserService', () => {
     }).compile();
 
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<UsersRepository>(UsersRepository);
-    courseRepository = module.get<CoursesRepository>(CoursesRepository);
-    enrollmentRepository = module.get<EnrollmentsRepository>(
-      EnrollmentsRepository,
-    );
   });
 
   describe('createUser', () => {
