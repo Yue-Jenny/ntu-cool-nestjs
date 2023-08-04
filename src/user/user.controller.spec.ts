@@ -12,6 +12,7 @@ import { UsersRepository } from './users.repository';
 import { CoursesRepository } from '../course/courses.repository';
 import { EnrollmentsRepository } from '../enrollment/enrollment.repository';
 import { GetUserByIdRequestParamDto } from './dto/get-user-by-id-request-param.dto';
+import { instanceToPlain } from 'class-transformer';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -44,11 +45,11 @@ describe('UserController', () => {
         name: 'John Doe',
         email: 'j@e',
       });
-
+      const createUserEntityJSON = instanceToPlain(createUserEntity);
       jest.spyOn(userService, 'createUser').mockReturnValue(createUserEntity);
 
       const result = userController.createUser(createUserDto);
-      expect(result).toEqual(createUserEntity);
+      expect(result).toStrictEqual(createUserEntityJSON);
     });
   });
 
@@ -61,14 +62,16 @@ describe('UserController', () => {
         name: 'John Doe',
         email: 'j@e',
       });
-
+      const userJSON = instanceToPlain(user);
       jest.spyOn(userService, 'getUserById').mockReturnValue(user);
 
       const getUserByIdDTO: GetUserByIdRequestParamDto = {
         id: userId,
       };
 
-      expect(userController.getUserById(getUserByIdDTO)).toEqual(user);
+      expect(userController.getUserById(getUserByIdDTO)).toStrictEqual(
+        userJSON,
+      );
     });
 
     it('should throw BadRequestException when the user does not exist', () => {
@@ -94,13 +97,18 @@ describe('UserController', () => {
         name: 'John Doe',
         email: 'j@e',
       });
-
-      jest.spyOn(userService, 'findUserByNameAndEmail').mockReturnValue([user]);
+      const userEntities = [user];
+      const userEntitiesJSON = instanceToPlain(userEntities);
+      jest
+        .spyOn(userService, 'findUserByNameAndEmail')
+        .mockReturnValue(userEntities);
       const queryDTO: findUserByNameAndEmailRequestQueryDto = {
         name: 'John Doe',
         email: 'j@e',
       };
-      expect(userController.findUserByNameAndEmail(queryDTO)).toEqual([user]);
+      expect(userController.findUserByNameAndEmail(queryDTO)).toStrictEqual(
+        userEntitiesJSON,
+      );
     });
 
     it('should return a user by name', () => {
@@ -109,12 +117,18 @@ describe('UserController', () => {
         name: 'John Doe',
         email: 'j@e',
       });
-      jest.spyOn(userService, 'findUserByNameAndEmail').mockReturnValue([user]);
+      const userEntities = [user];
+      const userEntitiesJSON = instanceToPlain(userEntities);
+      jest
+        .spyOn(userService, 'findUserByNameAndEmail')
+        .mockReturnValue(userEntities);
       const queryDTO: findUserByNameAndEmailRequestQueryDto = {
         name: 'John Doe',
         email: 'j@e',
       };
-      expect(userController.findUserByNameAndEmail(queryDTO)).toEqual([user]);
+      expect(userController.findUserByNameAndEmail(queryDTO)).toStrictEqual(
+        userEntitiesJSON,
+      );
     });
     it('should throw BadRequestException when the user does not exist', () => {
       jest
@@ -145,11 +159,12 @@ describe('UserController', () => {
         name: 'New Name',
         email: 'n@e',
       });
+      const updatedUserJSON = instanceToPlain(updatedUser);
 
       jest.spyOn(userService, 'editUser').mockReturnValue(updatedUser);
       const editDto: EditUserRequestParamDto = { id: userId };
-      expect(userController.editUser(editDto, updateUserDto)).toEqual(
-        updatedUser,
+      expect(userController.editUser(editDto, updateUserDto)).toStrictEqual(
+        updatedUserJSON,
       );
     });
 
@@ -180,10 +195,10 @@ describe('UserController', () => {
         name: 'John Doe',
         email: 'j@e',
       });
-
+      const userJSON = instanceToPlain(user);
       jest.spyOn(userService, 'deleteUserById').mockReturnValue(user);
       const deleteDto: DeleteUserRequestParamDto = { id: userId };
-      expect(userController.deleteUser(deleteDto)).toEqual(user);
+      expect(userController.deleteUser(deleteDto)).toStrictEqual(userJSON);
     });
 
     it('should throw BadRequestException when the user does not exist', () => {
