@@ -19,9 +19,6 @@ import { GetEnrollmentsByUserQueryDto } from './dto/get-enrollment-by-user-query
 describe('EnrollmentController', () => {
   let enrollmentController: EnrollmentController;
   let enrollmentService: EnrollmentService;
-  let userRepository: UsersRepository;
-  let courseRepository: CoursesRepository;
-  let enrollmentRepository: EnrollmentsRepository;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -37,11 +34,6 @@ describe('EnrollmentController', () => {
     enrollmentService = module.get<EnrollmentService>(EnrollmentService);
     enrollmentController =
       module.get<EnrollmentController>(EnrollmentController);
-    userRepository = module.get<UsersRepository>(UsersRepository);
-    courseRepository = module.get<CoursesRepository>(CoursesRepository);
-    enrollmentRepository = module.get<EnrollmentsRepository>(
-      EnrollmentsRepository,
-    );
   });
 
   describe('enrollUser', () => {
