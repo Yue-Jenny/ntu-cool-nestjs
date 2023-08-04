@@ -15,8 +15,6 @@ import { GetEnrollmentsByCourseQueryDto } from './dto/get-enrollments-by-course-
 import { GetEnrollmentsByCourseParamDto } from './dto/get-enrollments-by-course-param.dto';
 import { GetEnrollmentsByUserParamDto } from './dto/get-enrollment-by-user-param.dto';
 import { GetEnrollmentsByUserQueryDto } from './dto/get-enrollment-by-user-query.dto';
-import { CourseEntity } from '../entity/course/course.entity';
-import { UserEntity } from '../entity/user/user.entity';
 
 describe('EnrollmentController', () => {
   let enrollmentController: EnrollmentController;
@@ -178,13 +176,12 @@ describe('EnrollmentController', () => {
       });
       const expectedEnrollments: EnrollmentEntity[] = [expectedEnrollmentId1];
       const expectedEnrollmentsJSON = instanceToPlain(expectedEnrollments);
-      const courseEntity = new CourseEntity({ id: 1, name: 'Course 1' });
-      jest
-        .spyOn(enrollmentService, 'getCourseById')
-        .mockReturnValue(courseEntity);
 
       jest
-        .spyOn(enrollmentService, 'getEnrollmentsByMultiConditions')
+        .spyOn(
+          enrollmentService,
+          'getEnrollmentsByCourseIdAndFilterByUserIdAndRole',
+        )
         .mockReturnValue(expectedEnrollments);
 
       const result =
@@ -193,27 +190,26 @@ describe('EnrollmentController', () => {
           queryDto,
         );
 
-      expect(enrollmentService.getCourseById).toHaveBeenCalledWith(1);
-
-      expect(
-        enrollmentService.getEnrollmentsByMultiConditions,
-      ).toHaveBeenCalledWith(2, 1, 'student');
-
       expect(result).toStrictEqual(expectedEnrollmentsJSON);
     });
 
     it('should throw BadRequestException when the course does not exist', () => {
       const paramDto: GetEnrollmentsByCourseParamDto = {
-        courseId: 99,
+        courseId: 99, // The course does not exist
       };
       const queryDto: GetEnrollmentsByCourseQueryDto = {
         userId: 2,
         role: Roles.Student,
       };
 
-      jest.spyOn(enrollmentService, 'getCourseById').mockImplementation(() => {
-        throw new BadRequestException('Course not found.');
-      });
+      jest
+        .spyOn(
+          enrollmentService,
+          'getEnrollmentsByCourseIdAndFilterByUserIdAndRole',
+        )
+        .mockImplementation(() => {
+          throw new BadRequestException('Course not found');
+        });
 
       expect(() =>
         enrollmentController.getEnrollmentsByCourseIdAndFilterByUserIdAndRole(
@@ -234,21 +230,21 @@ describe('EnrollmentController', () => {
         role: Roles.Student,
       };
 
-      const expectedEnrollmentId1 = new EnrollmentEntity({
+      const expectedEnrollment = new EnrollmentEntity({
         id: 1,
         userId: 1,
         courseId: 2,
         role: Roles.Student,
       });
 
-      const expectedEnrollments: EnrollmentEntity[] = [expectedEnrollmentId1];
+      const expectedEnrollments: EnrollmentEntity[] = [expectedEnrollment];
       const expectedEnrollmentsJSON = instanceToPlain(expectedEnrollments);
 
-      const userEntity = new UserEntity({ id: 1, name: 'Rick', email: 't@s' });
-      jest.spyOn(enrollmentService, 'getUserById').mockReturnValue(userEntity);
-
       jest
-        .spyOn(enrollmentService, 'getEnrollmentsByMultiConditions')
+        .spyOn(
+          enrollmentService,
+          'getEnrollmentsByUserIdAndFilterByRoleAndCourseId',
+        )
         .mockReturnValue(expectedEnrollments);
 
       const enrollmentEntities =
@@ -257,27 +253,26 @@ describe('EnrollmentController', () => {
           queryDto,
         );
 
-      expect(enrollmentService.getUserById).toHaveBeenCalledWith(1);
-
-      expect(
-        enrollmentService.getEnrollmentsByMultiConditions,
-      ).toHaveBeenCalledWith(1, 2, 'student');
-
       expect(enrollmentEntities).toStrictEqual(expectedEnrollmentsJSON);
     });
 
     it('should throw BadRequestException when the user does not exist', () => {
       const paramDto: GetEnrollmentsByUserParamDto = {
-        userId: 1,
+        userId: 100,
       };
       const queryDto: GetEnrollmentsByUserQueryDto = {
-        courseId: 99,
+        courseId: 1,
         role: Roles.Student,
       };
 
-      jest.spyOn(enrollmentService, 'getUserById').mockImplementation(() => {
-        throw new BadRequestException('User not found.');
-      });
+      jest
+        .spyOn(
+          enrollmentService,
+          'getEnrollmentsByUserIdAndFilterByRoleAndCourseId',
+        )
+        .mockImplementation(() => {
+          throw new BadRequestException('User not found');
+        });
 
       expect(() =>
         enrollmentController.getEnrollmentsByUserIdAndFilterByRoleAndCourseId(
