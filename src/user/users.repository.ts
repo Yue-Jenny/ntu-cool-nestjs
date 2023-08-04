@@ -16,16 +16,25 @@ export class UsersRepository {
 
   public getUserById(id: number): UserEntity {
     const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      return null;
+    }
     return user;
   }
 
   public getUserByName(name: string): UserEntity[] {
     const user = this.users.filter((user) => user.name === name);
+    if (!user) {
+      return null;
+    }
     return user;
   }
 
   public getUserByEmail(email: string): UserEntity[] {
     const user = this.users.filter((user) => user.email === email);
+    if (!user) {
+      return null;
+    }
     return user;
   }
 
@@ -33,6 +42,9 @@ export class UsersRepository {
     const user = this.users.filter(
       (user) => user.email === email && user.name === name,
     );
+    if (!user) {
+      return null;
+    }
     return user;
   }
 

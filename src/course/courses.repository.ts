@@ -23,6 +23,12 @@ export class CoursesRepository {
   ];
 
   public getCourseById(courseId: number): CourseEntity {
-    return this.courses.find((course) => course.id === courseId);
+    const foundCourseEntity = this.courses.find(
+      (course) => course.id === courseId,
+    );
+    if (!foundCourseEntity) {
+      return null;
+    }
+    return foundCourseEntity;
   }
 }

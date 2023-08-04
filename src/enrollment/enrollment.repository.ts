@@ -74,9 +74,13 @@ export class EnrollmentsRepository {
    */
   public getEnrollmentsByCourseId(courseId: number): EnrollmentEntity[] {
     // 因為每堂課都可能有許多學員報名，所以依據課程來搜尋，可能會有多個 enrollment 結果。因此需要篩選出滿足特定條件的所有元素。
-    return this.enrollments.filter(
+    const foundEnrollmentEntities = this.enrollments.filter(
       (enrollment) => !courseId || enrollment.courseId === courseId,
     );
+    if (!foundEnrollmentEntities) {
+      return null;
+    }
+    return foundEnrollmentEntities;
   }
 
   /**
@@ -86,9 +90,13 @@ export class EnrollmentsRepository {
    */
   public getEnrollmentsByUserId(userId: number): EnrollmentEntity[] {
     // 因為一個學員可能報名很多課程，因此依據學員來搜尋，可能會有多個 enrollment 結果。因此需要篩選出滿足特定條件的所有元素。
-    return this.enrollments.filter(
+    const foundEnrollmentEntities = this.enrollments.filter(
       (enrollment) => !userId || enrollment.userId === userId,
     );
+    if (!foundEnrollmentEntities) {
+      return null;
+    }
+    return foundEnrollmentEntities;
   }
 
   /**
