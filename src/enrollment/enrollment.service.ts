@@ -3,8 +3,6 @@ import { EnrollmentEntity } from '../entity/enrollment/enrollment.entity';
 import { EnrollmentsRepository } from './enrollment.repository';
 import { UsersRepository } from '../user/users.repository';
 import { CoursesRepository } from '../course/courses.repository';
-import { CourseEntity } from 'src/entity/course/course.entity';
-import { UserEntity } from 'src/entity/user/user.entity';
 
 @Injectable()
 export class EnrollmentService {
@@ -68,24 +66,45 @@ export class EnrollmentService {
     return foundEnrollmentByEnrollmentId;
   }
 
-  getCourseById(courseId: number): CourseEntity {
+  getEnrollmentsByCourseIdAndFilterByUserIdAndRole(
+    userId: number,
+    courseId: number,
+    role: string,
+  ): EnrollmentEntity[] {
     // if the course doesn't exist, return Bad Request
     const course = this.courseRepository.getCourseById(courseId);
     if (!course) {
-      throw new BadRequestException('Course not found.');
+      throw new BadRequestException('Course not found');
     }
-    return course;
+
+    const enrollmentEntites = this.getEnrollmentsByMultiConditions(
+      userId,
+      courseId,
+      role,
+    );
+
+    return enrollmentEntites;
   }
 
-  getUserById(userId: number): UserEntity {
+  getEnrollmentsByUserIdAndFilterByRoleAndCourseId(
+    userId: number,
+    courseId: number,
+    role: string,
+  ): EnrollmentEntity[] {
     // if the user doesn't exist, return Bad Request
     const user = this.userRepository.getUserById(userId);
     if (!user) {
       throw new BadRequestException('User not found');
     }
-    return user;
-  }
 
+    const enrollmentEntites = this.getEnrollmentsByMultiConditions(
+      userId,
+      courseId,
+      role,
+    );
+
+    return enrollmentEntites;
+  }
   /**
    * 5. everyone can query enrollments in the course by course id, and filter by role or user id;
    * 6. everyone can query enrollments by user id, and filter by role or course id;

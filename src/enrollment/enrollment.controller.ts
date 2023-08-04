@@ -23,7 +23,7 @@ import { GetEnrollmentsByUserParamDto } from './dto/get-enrollment-by-user-param
 import { GetEnrollmentsByUserQueryDto } from './dto/get-enrollment-by-user-query.dto';
 import { instanceToPlain } from 'class-transformer';
 import { EnrollmentEntity } from '../entity/enrollment/enrollment.entity';
-import { AuthGuard } from 'src/guard/auth.guard';
+import { AuthGuard } from '../guard/auth.guard';
 
 @Controller('/api')
 export class EnrollmentController {
@@ -169,11 +169,8 @@ export class EnrollmentController {
       const { courseId } = paramDto;
       const { userId, role } = queryDto;
 
-      // if the course doesn't exist, return Bad Request
-      this.enrollmentService.getCourseById(courseId);
-
       enrollmentEntites =
-        this.enrollmentService.getEnrollmentsByMultiConditions(
+        this.enrollmentService.getEnrollmentsByCourseIdAndFilterByUserIdAndRole(
           userId,
           courseId,
           role,
@@ -218,11 +215,8 @@ export class EnrollmentController {
       const { userId } = paramDto;
       const { courseId, role } = queryDto;
 
-      // if the user doesn't exist, return Bad Request
-      this.enrollmentService.getUserById(userId);
-
       enrollmentEntites =
-        this.enrollmentService.getEnrollmentsByMultiConditions(
+        this.enrollmentService.getEnrollmentsByUserIdAndFilterByRoleAndCourseId(
           userId,
           courseId,
           role,
