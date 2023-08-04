@@ -81,8 +81,8 @@ describe('CourseController', () => {
       const courseEntities = courseController.getCoursesByUserId(
         getCourseByUserIdRequestParamDto,
       );
-      expect(courseEntities[0].id).toEqual(mockCourseEntities[0].id);
-      expect(courseEntities[0].name).toEqual(mockCourseEntities[0].name);
+      expect(courseEntities[0].id).toBe(mockCourseEntities[0].id);
+      expect(courseEntities[0].name).toBe(mockCourseEntities[0].name);
     });
     it('should throw BadRequestException when the user does not exist', () => {
       const getCourseByUserIdRequestParamDto: GetCourseByUserIdRequestParamDto =

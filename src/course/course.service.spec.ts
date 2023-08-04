@@ -34,8 +34,8 @@ describe('CourseService', () => {
     it('should get courseEntity with courseId', () => {
       const courseId = 2; // The course exist
       const courseEntity = courseService.getCourseById(courseId);
-      expect(courseEntity.id).toEqual(courseId);
-      expect(courseEntity.name).toEqual('成為 Cool 大師的路上');
+      expect(courseEntity.id).toBe(courseId);
+      expect(courseEntity.name).toBe('成為 Cool 大師的路上');
     });
 
     it('should throw BadRequestException when course does not exist', () => {
@@ -67,8 +67,8 @@ describe('CourseService', () => {
       const courseEntities = courseService.getCoursesByUserId(
         testUserEntity.id,
       );
-      expect(courseEntities[0].id).toEqual(courseId);
-      expect(courseEntities[0].name).toEqual('Software engineering 101');
+      expect(courseEntities[0].id).toBe(courseId);
+      expect(courseEntities[0].name).toBe('Software engineering 101');
     });
 
     it('should throw BadRequestException when user does not exist', () => {
