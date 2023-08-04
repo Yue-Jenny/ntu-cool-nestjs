@@ -57,9 +57,14 @@ export class EnrollmentsRepository {
    */
   public getEnrollmentByEnrollmentId(enrollmentId: number): EnrollmentEntity {
     // 因為 enrollmentId 是 unique，所以用 find 找出第一個(也是唯一一個)吻合的 enrollment 即可。
-    return this.enrollments.find(
+    const foundEnrollmentEntity = this.enrollments.find(
       (enrollment) => enrollment.id === enrollmentId,
     );
+    // 若找不到對應的 enrollment 結果，則回傳 null。
+    if (!foundEnrollmentEntity) {
+      return null;
+    }
+    return foundEnrollmentEntity;
   }
 
   /**
