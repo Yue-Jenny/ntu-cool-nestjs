@@ -15,9 +15,7 @@ import { EnrollmentsRepository } from '../enrollment/enrollment.repository';
 describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
-  let userRepository: UsersRepository;
-  let courseRepository: CoursesRepository;
-  let enrollmentRepository: EnrollmentsRepository;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
@@ -31,11 +29,6 @@ describe('UserController', () => {
 
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<UsersRepository>(UsersRepository);
-    courseRepository = module.get<CoursesRepository>(CoursesRepository);
-    enrollmentRepository = module.get<EnrollmentsRepository>(
-      EnrollmentsRepository,
-    );
   });
 
   describe('createUser', () => {
