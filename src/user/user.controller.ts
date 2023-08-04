@@ -24,7 +24,7 @@ import { GetUserByIdRequestParamDto } from './dto/get-user-by-id-request-param.d
 import { instanceToPlain } from 'class-transformer';
 import { GetUserByCourseIdRequestParamDto } from './dto/get-user-by-course-reques-param.dto';
 import { UserEntity } from '../entity/user/user.entity';
-import { AuthGuard } from 'src/guard/auth.guard';
+import { AuthGuard } from '../guard/auth.guard';
 
 @Controller('/api')
 export class UserController {
