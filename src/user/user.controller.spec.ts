@@ -11,6 +11,7 @@ import { UserEntity } from '../entity/user/user.entity';
 import { UsersRepository } from './users.repository';
 import { CoursesRepository } from '../course/courses.repository';
 import { EnrollmentsRepository } from '../enrollment/enrollment.repository';
+import { GetUserByIdRequestParamDto } from './dto/get-user-by-id-request-param.dto';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -62,7 +63,12 @@ describe('UserController', () => {
       });
 
       jest.spyOn(userService, 'getUserById').mockReturnValue(user);
-      expect(userController.getUserById({ id: userId })).toEqual(user);
+
+      const getUserByIdDTO: GetUserByIdRequestParamDto = {
+        id: userId,
+      };
+
+      expect(userController.getUserById(getUserByIdDTO)).toEqual(user);
     });
 
     it('should throw BadRequestException when the user does not exist', () => {
@@ -72,8 +78,10 @@ describe('UserController', () => {
       jest.spyOn(userService, 'getUserById').mockImplementation(() => {
         throw new BadRequestException('User not found');
       });
-
-      expect(() => userController.getUserById({ id: userId })).toThrow(
+      const getUserByIdDTO: GetUserByIdRequestParamDto = {
+        id: userId,
+      };
+      expect(() => userController.getUserById(getUserByIdDTO)).toThrow(
         BadRequestException,
       );
     });
