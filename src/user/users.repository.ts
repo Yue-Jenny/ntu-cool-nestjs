@@ -6,12 +6,12 @@ export class UsersRepository {
   private users: UserEntity[] = [];
   private incrementId = 0;
 
-  public save(newUser: UserEntity): UserEntity[] {
+  public save(newUser: UserEntity): UserEntity {
     this.incrementId++;
     const userId = this.incrementId;
     newUser.id = userId;
     this.users.push(newUser);
-    return this.users;
+    return newUser;
   }
 
   public getUserById(id: number): UserEntity {
