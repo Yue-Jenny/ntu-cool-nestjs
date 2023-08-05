@@ -36,8 +36,14 @@ export class UserController {
    *  a. if email format does not match `/^\S@\S$/`, return Bad Request
    *
    * Advanced requirement: only admin `cool` can create, edit, delete a user;
-   * @param createUserDto
-   * @returns User
+   *
+   * @route POST /api/v1/user
+   * @param {CreateUserDto} createUserDto - The object containing user data for creation.
+   * @param {string} createUserDto.name - The name of the user.
+   * @param {string} createUserDto.email - The email of the user.
+   * @returns {UserEntity} - The newly created user entity.
+   * @throws {BadRequestException} If the email format is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during user creation.
    */
   @Post('/v1/user')
   @UseGuards(AuthGuard)
@@ -64,8 +70,13 @@ export class UserController {
   /**
    * 2. everyone can get a user by user id;
    *  a. if the user doesn't exist, return Bad Request
-   * @param id
-   * @returns
+   *
+   * @route GET /api/v1/user/:id
+   * @param {GetUserByIdRequestParamDto} getUserByIdDTO - The object contains userId.
+   * @param {string} getUserByIdDTO.id - The ID of the user.
+   * @returns {UserEntity} - The user entity.
+   * @throws {BadRequestException} If the user doesn't exist.
+   * @throws {InternalServerErrorException} If there's an internal server error during user query.
    */
   @Get('/v1/user/:id')
   @UsePipes(
@@ -95,9 +106,14 @@ export class UserController {
    * 3. everyone can query a user by email or name;
    *  a. use query string to specify email or name
    *  b. if email format does not match ``/^\S@\S$/``, return Bad Request
-   * @param email
-   * @param name
-   * @returns
+   *
+   * @route GET /api/v1/user
+   * @param {findUserByNameOrEmailRequestQueryDto} queryDTO - The query parameters for the request.
+   * @param {string} queryDTO.email - The email of the user.
+   * @param {string} queryDTO.name - The name of the user.
+   * @returns {UserEntity[]} - An array of user entities.
+   * @throws {BadRequestException} If the user doesn't exist or email format is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during user query.
    */
   @Get('/v1/user')
   @UsePipes(new ValidationPipe())
@@ -127,9 +143,16 @@ export class UserController {
    *  b. if email format does not match ``/^\S@\S$/``, return Bad Request
    *
    * Advanced requirement: only admin `cool` can create, edit, delete a user;
-   * @param id
-   * @param updateUserDto
-   * @returns
+   *
+   * @route PUT /api/v1/user/:id
+   * @param {EditUserRequestParamDto} editDto - The object contains userId.
+   * @param {string} editDto.id - The ID of the user to be edited.
+   * @param {UpdateUserDto} updateUserDto - The object contains updated user data.
+   * @param {string} updateUserDto.name - The new name of the user.
+   * @param {string} updateUserDto.email - The new email of the user (should match the pattern /^\S@\S$/).
+   * @returns {UserEntity} - The updated user entity.
+   * @throws {BadRequestException} If the user doesn't exist or email format is invalid.
+   * @throws {InternalServerErrorException} If an internal server error occurs during user editing.
    */
   @Put('/v1/user/:id')
   @UseGuards(AuthGuard)
@@ -165,8 +188,13 @@ export class UserController {
    *  a. if the user doesn't exist, return Bad Request
    *
    * Advanced requirement: only admin `cool` can create, edit, delete a user;
-   * @param id
-   * @returns
+   *
+   * @route DELETE /api/v1/user/:id
+   * @param {DeleteUserRequestParamDto} deleteDto - The query parameters for the request.
+   * @param {string} deleteDto.id - The ID of the user to be deleted.
+   * @returns {UserEntity} - The deleted user entity.
+   * @throws {BadRequestException} If the user doesn't exist.
+   * @throws {InternalServerErrorException} If an internal server error occurs during user deleting.
    */
   @Delete('/v1/user/:id')
   @UseGuards(AuthGuard)
@@ -196,8 +224,13 @@ export class UserController {
   /**
    * 6. everyone can query users in the course by course id;
    *  a. if the course doesn't exist, return Bad Request
-   * @param courseId
-   * @returns UserEntity[]
+   *
+   * @route GET /api/v1/user/:courseId/users
+   * @param {GetUserByCourseIdRequestParamDto} paramDto - The query parameters for the request.
+   * @param {string} paramDto.courseId - The ID of the course to retrieve users from.
+   * @returns {UserEntity[]} - An array of user entities in the course.
+   * @throws {BadRequestException} If the course doesn't exist.
+   * @throws {InternalServerErrorException} If the user encounters an internal server error while querying users by courseId.
    */
   @Get('/v1/user/:courseId/users')
   @UsePipes(

@@ -22,8 +22,13 @@ export class CourseController {
   /**
    * 12. everyone can get a course by course id;
    *  a. if the course doesn't exist, return Bad Request
-   * @param courseId
-   * @returns CourseEntity
+   *
+   * @route GET /api/v1/course/:courseId
+   * @param {GetCourseByIdRequestParamDto} paramDto - The object containing enrollment data.
+   * @param {string} paramDto.courseId - The ID of the course to retrieve.
+   * @returns {paramDto} - The course entity.
+   * @throws {BadRequestException} If the course doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during the query.
    */
   @Get('/v1/course/:courseId')
   @UsePipes(
@@ -52,8 +57,13 @@ export class CourseController {
   /**
    * 13. everyone can query courses by user id ;
    *  a. if the user doesn't exist, return Bad Request
-   * @param userId
-   * @returns CourseEntity[]
+   *
+   * @route GET /api/v1/course/users/:userId
+   * @param {GetCourseByUserIdRequestParamDto} paramDto - The object containing enrollment data.
+   * @param {string} paramDto.userId - The ID of the user to retrieve courses for.
+   * @returns {CourseEntity[]} - An array of course entities for the user.
+   * @throws {BadRequestException} If the user doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during the query.
    */
   @Get('/v1/course/users/:userId')
   @UsePipes(

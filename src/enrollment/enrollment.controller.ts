@@ -35,8 +35,15 @@ export class EnrollmentController {
    *   a. if the user, the course or the role doesn't exist, return Bad Request
    *
    * Advanced requirement: only admin `cool` can create, edit, delete a user;
-   * @param enrollmentDto
-   * @returns
+   *
+   * @route POST /api/v1/enrollment
+   * @param {CreateEnrollmentDto} enrollmentDto - The object containing enrollment data.
+   * @param {string} enrollmentDto.userId - The ID of the user to be enrolled.
+   * @param {string} enrollmentDto.courseId - The ID of the course to enroll the user in.
+   * @param {string} enrollmentDto.role - The role of the user in the course.
+   * @returns {EnrollmentEntity} - The newly created enrollment entity.
+   * @throws {BadRequestException} If the user, course, or role doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during enrollment creation.
    */
   @Post('/v1/enrollment')
   @UseGuards(AuthGuard)
@@ -76,8 +83,13 @@ export class EnrollmentController {
    *    a. if the enrollment doesn't exist, return Bad Request
    *
    * Advanced requirement: only admin `cool` can create, edit, delete a user;
-   * @param enrollmentId
-   * @returns
+   *
+   * @route DELETE /api/v1/enrollment/:enrollmentId
+   * @param {WithDrawUserDto} withdrawUserDto - The object containing withdrawal enrollment data.
+   * @param {string} withdrawUserDto.enrollmentId - The ID of the enrollment to be withdrawn.
+   * @returns {EnrollmentEntity} - The enrollment entity of the withdrawn user.
+   * @throws {BadRequestException} If the enrollment doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during withdrawal.
    */
   @Delete('/v1/enrollment/:enrollmentId')
   @UseGuards(AuthGuard)
@@ -110,8 +122,13 @@ export class EnrollmentController {
   }
   /**
    * 9. everyone can get an enrollment by enrollment id;
-   * @param enrollmentId
-   * @returns
+   *
+   * @route GET /api/v1/enrollment/:enrollmentId
+   * @param {GetEnrollmentsByEnrollmentParamDto} paramDto - The object contains enrollment data for the query.
+   * @param {string} paramDto.enrollmentId - The ID of the enrollment to retrieve.
+   * @returns {EnrollmentEntity} - The enrollment entity.
+   * @throws {BadRequestException} If the enrollment doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during retrieval.
    */
   @Get('/v1/enrollment/:enrollmentId')
   @UsePipes(
@@ -149,9 +166,16 @@ export class EnrollmentController {
    * 10. everyone can query enrollments in the course by course id, and filter by role or user id;
    *  a. use a query string to specify a role or user id. like: ``/?userId=1&role=student``
    *  b. if the course doesn't exist, return Bad Request
-   * @param courseId
-   * @param query
-   * @returns
+   *
+   * @route GET /api/v1/enrollment/course/:courseId
+   * @param {GetEnrollmentsByCourseParamDto} paramDto - The object containing required query parameters.
+   * @param {string} paramDto.courseId - The ID of the course to retrieve enrollments from.
+   * @param {GetEnrollmentsByCourseQueryDto} queryDto - The object containing optional query parameters.
+   * @param {string} queryDto.userId - The ID of the user to filter enrollments (optional).
+   * @param {string} queryDto.role - The role of the user to filter enrollments (optional).
+   * @returns {EnrollmentEntity[]} - An array of enrollment entities in the course that match the filters.
+   * @throws {BadRequestException} If the course doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during retrieval.
    */
   @Get('/v1/enrollment/course/:courseId')
   @UsePipes(
@@ -196,9 +220,16 @@ export class EnrollmentController {
    * 11. everyone can query enrollments by user id, and filter by role or course id;
    *  a. use a query string to specify a role or course id. like: ``/?role=student``
    *  b. if the user doesn't exist, return Bad Request
-   * @param userId
-   * @param query
-   * @returns
+   *
+   * @route GET /api/v1/enrollment/user/:userId
+   * @param {GetEnrollmentsByUserParamDto} paramDto - The object containing required query parameters.
+   * @param {string} paramDto.userId - The ID of the user to retrieve enrollments.
+   * @param {GetEnrollmentsByUserQueryDto} queryDto - The object containing optional query parameters.
+   * @param {string} queryDto.courseId - The ID of the course to filter enrollments (optional).
+   * @param {string} queryDto.role - The role of the user to filter enrollments (optional).
+   * @returns {EnrollmentEntity[]} - An array of enrollment entities for the user that match the filters.
+   * @throws {BadRequestException} If the user doesn't exist or input data is invalid.
+   * @throws {InternalServerErrorException} If there's an internal server error during retrieval.
    */
   @Get('/v1/enrollment/user/:userId')
   @UsePipes(
