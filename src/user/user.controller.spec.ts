@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { findUserByNameAndEmailRequestQueryDto } from './dto/find-user-by-name-and-email-request-query.dto';
+import { findUserByNameOrEmailRequestQueryDto } from './dto/find-user-by-name-and-email-request-query.dto';
 import { EditUserRequestParamDto } from './dto/edit-user-request-param.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteUserRequestParamDto } from './dto/delete-user-request-param.dto';
@@ -90,7 +90,7 @@ describe('UserController', () => {
     });
   });
 
-  describe('findUserByNameAndEmail', () => {
+  describe('findUserByNameOrEmail', () => {
     it('should return a user by email', () => {
       const user = new UserEntity({
         id: 1,
@@ -100,13 +100,13 @@ describe('UserController', () => {
       const userEntities = [user];
       const userEntitiesJSON = instanceToPlain(userEntities);
       jest
-        .spyOn(userService, 'findUserByNameAndEmail')
+        .spyOn(userService, 'findUserByNameOrEmail')
         .mockReturnValue(userEntities);
-      const queryDTO: findUserByNameAndEmailRequestQueryDto = {
-        name: 'John Doe',
+      const queryDTO: findUserByNameOrEmailRequestQueryDto = {
+        name: '',
         email: 'j@e',
       };
-      expect(userController.findUserByNameAndEmail(queryDTO)).toStrictEqual(
+      expect(userController.findUserByNameOrEmail(queryDTO)).toStrictEqual(
         userEntitiesJSON,
       );
     });
@@ -120,28 +120,28 @@ describe('UserController', () => {
       const userEntities = [user];
       const userEntitiesJSON = instanceToPlain(userEntities);
       jest
-        .spyOn(userService, 'findUserByNameAndEmail')
+        .spyOn(userService, 'findUserByNameOrEmail')
         .mockReturnValue(userEntities);
-      const queryDTO: findUserByNameAndEmailRequestQueryDto = {
-        name: 'John Doe',
+      const queryDTO: findUserByNameOrEmailRequestQueryDto = {
+        name: '',
         email: 'j@e',
       };
-      expect(userController.findUserByNameAndEmail(queryDTO)).toStrictEqual(
+      expect(userController.findUserByNameOrEmail(queryDTO)).toStrictEqual(
         userEntitiesJSON,
       );
     });
     it('should throw BadRequestException when the user does not exist', () => {
       jest
-        .spyOn(userService, 'findUserByNameAndEmail')
+        .spyOn(userService, 'findUserByNameOrEmail')
         .mockImplementation(() => {
           throw new BadRequestException('User not found');
         });
 
-      const queryDTO: findUserByNameAndEmailRequestQueryDto = {
+      const queryDTO: findUserByNameOrEmailRequestQueryDto = {
         name: 'John Doe',
         email: 'j@e',
       };
-      expect(() => userController.findUserByNameAndEmail(queryDTO)).toThrow(
+      expect(() => userController.findUserByNameOrEmail(queryDTO)).toThrow(
         BadRequestException,
       );
     });

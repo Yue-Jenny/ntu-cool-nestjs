@@ -17,7 +17,7 @@ import {
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { findUserByNameAndEmailRequestQueryDto } from './dto/find-user-by-name-and-email-request-query.dto';
+import { findUserByNameOrEmailRequestQueryDto } from './dto/find-user-by-name-and-email-request-query.dto';
 import { DeleteUserRequestParamDto } from './dto/delete-user-request-param.dto';
 import { EditUserRequestParamDto } from './dto/edit-user-request-param.dto';
 import { GetUserByIdRequestParamDto } from './dto/get-user-by-id-request-param.dto';
@@ -101,13 +101,13 @@ export class UserController {
    */
   @Get('/v1/user')
   @UsePipes(new ValidationPipe())
-  findUserByNameAndEmail(
-    @Query() queryDTO: findUserByNameAndEmailRequestQueryDto,
+  findUserByNameOrEmail(
+    @Query() queryDTO: findUserByNameOrEmailRequestQueryDto,
   ) {
     let userEntities: UserEntity[] = [];
     try {
       const { email, name } = queryDTO;
-      userEntities = this.userService.findUserByNameAndEmail(email, name);
+      userEntities = this.userService.findUserByNameOrEmail(email, name);
       const userEntityJSON = instanceToPlain(userEntities);
       return userEntityJSON;
     } catch (error) {

@@ -53,7 +53,7 @@ export class UserService {
    * @param name
    * @returns UserEntity[]
    */
-  findUserByNameAndEmail(email: string, name: string): UserEntity[] {
+  findUserByNameOrEmail(email: string, name: string): UserEntity[] {
     // query string to specify name
     if (name && !email) {
       const userByName = this.userRepository.getUserByName(name);

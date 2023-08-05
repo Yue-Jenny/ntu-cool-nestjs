@@ -61,12 +61,12 @@ describe('UserService', () => {
     });
   });
 
-  describe('findUserByNameAndEmail', () => {
+  describe('findUserByNameOrEmail', () => {
     it('should return filtered users by name and email', () => {
       userService.createUser('John', 'john@example.com');
       userService.createUser('Jane', 'jane@example.com');
 
-      const filteredUsers = userService.findUserByNameAndEmail(
+      const filteredUsers = userService.findUserByNameOrEmail(
         'john@example.com',
         'John',
       );
@@ -79,7 +79,7 @@ describe('UserService', () => {
       userService.createUser('John', 'g@g');
       userService.createUser('Jane', 'g@e');
 
-      const filteredUsers = userService.findUserByNameAndEmail('g@g', '');
+      const filteredUsers = userService.findUserByNameOrEmail('g@g', '');
       expect(filteredUsers.length).toBe(1);
       expect(filteredUsers[0].name).toBe('John');
       expect(filteredUsers[0].email).toBe('g@g');
@@ -88,14 +88,14 @@ describe('UserService', () => {
       userService.createUser('John', 'g@g');
       userService.createUser('Jane', 'g@e');
 
-      const filteredUsers = userService.findUserByNameAndEmail('', 'Jane');
+      const filteredUsers = userService.findUserByNameOrEmail('', 'Jane');
       expect(filteredUsers.length).toBe(1);
       expect(filteredUsers[0].name).toBe('Jane');
       expect(filteredUsers[0].email).toBe('g@e');
     });
     it('should throw BadRequestException if no matching users are found', () => {
       expect(() =>
-        userService.findUserByNameAndEmail('nonexistent@example.com', ''),
+        userService.findUserByNameOrEmail('nonexistent@example.com', ''),
       ).toThrow(BadRequestException);
     });
   });
